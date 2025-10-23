@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Play, Pause, RotateCcw, Settings } from "lucide-react";
+import { Play, Pause, RotateCcw, Settings, SkipForward } from "lucide-react";
 import { toast } from "sonner";
 
 type TimerState = "idle" | "work" | "rest";
@@ -112,6 +112,27 @@ export const IntervalTimer = () => {
 
   const handlePause = () => {
     setIsRunning(false);
+  };
+
+  const handleSkip = () => {
+    if (timerState === "work") {
+      playBeep(800, 0.3);
+      toast.success("Rest Time!");
+      setTimerState("rest");
+      setTimeRemaining(restTime);
+    } else if (timerState === "rest") {
+      if (!infinite && currentRound >= rounds) {
+        playBeep(1000, 0.5);
+        toast.success("Workout Complete! 🎉");
+        handleReset();
+      } else {
+        playBeep(600, 0.3);
+        toast.success(`Round ${currentRound + 1} - Work!`);
+        setCurrentRound((r) => r + 1);
+        setTimerState("work");
+        setTimeRemaining(workTime);
+      }
+    }
   };
 
   const handleReset = () => {
@@ -255,6 +276,15 @@ export const IntervalTimer = () => {
                   Resume
                 </Button>
               )}
+              <Button 
+                onClick={handleSkip} 
+                size="lg" 
+                variant="outline"
+                className="flex-1 h-16 text-xl"
+              >
+                <SkipForward className="mr-2 h-6 w-6" />
+                Skip
+              </Button>
               <Button 
                 onClick={handleReset} 
                 size="lg" 
