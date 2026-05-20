@@ -19,7 +19,7 @@ This interval timer is simple. It lets you define your work/rest periods, how ma
 
 ## Live demo
 
-**[rah711.github.io/interval-timer](https://rah711.github.io/interval-timer/)**
+**[sarahkstay.github.io/interval-timer](https://sarahkstay.github.io/interval-timer/)**
 
 ## Tech stack
 
