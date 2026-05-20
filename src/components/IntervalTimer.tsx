@@ -14,18 +14,20 @@ export const IntervalTimer = () => {
   const [rounds, setRounds] = useState(8);
   const [infinite, setInfinite] = useState(false);
   const [isConfiguring, setIsConfiguring] = useState(true);
-  
+
   const [timerState, setTimerState] = useState<TimerState>("idle");
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [currentRound, setCurrentRound] = useState(1);
   const [isRunning, setIsRunning] = useState(false);
-  
+
   const audioContextRef = useRef<AudioContext | null>(null);
   const intervalRef = useRef<number | null>(null);
 
   // Initialize audio context
   useEffect(() => {
-    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    audioContextRef.current = new (
+      window.AudioContext || (window as any).webkitAudioContext
+    )();
     return () => {
       if (audioContextRef.current) {
         audioContextRef.current.close();
@@ -36,19 +38,22 @@ export const IntervalTimer = () => {
   // Play beep sound
   const playBeep = (frequency: number, duration: number) => {
     if (!audioContextRef.current) return;
-    
+
     const oscillator = audioContextRef.current.createOscillator();
     const gainNode = audioContextRef.current.createGain();
-    
+
     oscillator.connect(gainNode);
     gainNode.connect(audioContextRef.current.destination);
-    
+
     oscillator.frequency.value = frequency;
     oscillator.type = "sine";
-    
+
     gainNode.gain.setValueAtTime(0.3, audioContextRef.current.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContextRef.current.currentTime + duration);
-    
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioContextRef.current.currentTime + duration,
+    );
+
     oscillator.start(audioContextRef.current.currentTime);
     oscillator.stop(audioContextRef.current.currentTime + duration);
   };
@@ -92,7 +97,15 @@ export const IntervalTimer = () => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isRunning, timerState, currentRound, rounds, workTime, restTime, infinite]);
+  }, [
+    isRunning,
+    timerState,
+    currentRound,
+    rounds,
+    workTime,
+    restTime,
+    infinite,
+  ]);
 
   const handleStart = () => {
     if (isConfiguring) {
@@ -152,9 +165,10 @@ export const IntervalTimer = () => {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const progress = timerState === "work" 
-    ? ((workTime - timeRemaining) / workTime) * 100
-    : ((restTime - timeRemaining) / restTime) * 100;
+  const progress =
+    timerState === "work"
+      ? ((workTime - timeRemaining) / workTime) * 100
+      : ((restTime - timeRemaining) / restTime) * 100;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
@@ -168,7 +182,9 @@ export const IntervalTimer = () => {
 
             <div className="grid gap-6">
               <div className="space-y-2">
-                <Label htmlFor="work-time" className="text-lg">Work Period (seconds)</Label>
+                <Label htmlFor="work-time" className="text-lg">
+                  Work Period (seconds)
+                </Label>
                 <Input
                   id="work-time"
                   type="number"
@@ -180,7 +196,9 @@ export const IntervalTimer = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="rest-time" className="text-lg">Rest Period (seconds)</Label>
+                <Label htmlFor="rest-time" className="text-lg">
+                  Rest Period (seconds)
+                </Label>
                 <Input
                   id="rest-time"
                   type="number"
@@ -193,7 +211,9 @@ export const IntervalTimer = () => {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="rounds" className="text-lg">Number of Rounds</Label>
+                  <Label htmlFor="rounds" className="text-lg">
+                    Number of Rounds
+                  </Label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
@@ -201,7 +221,9 @@ export const IntervalTimer = () => {
                       onChange={(e) => setInfinite(e.target.checked)}
                       className="w-4 h-4"
                     />
-                    <span className="text-sm text-muted-foreground">Infinite</span>
+                    <span className="text-sm text-muted-foreground">
+                      Infinite
+                    </span>
                   </label>
                 </div>
                 <Input
@@ -216,9 +238,9 @@ export const IntervalTimer = () => {
               </div>
             </div>
 
-            <Button 
-              onClick={handleStart} 
-              size="lg" 
+            <Button
+              onClick={handleStart}
+              size="lg"
               className="w-full h-16 text-xl"
             >
               <Play className="mr-2 h-6 w-6" />
@@ -227,10 +249,10 @@ export const IntervalTimer = () => {
           </div>
         ) : (
           <div className="space-y-8">
-            <div 
+            <div
               className={`text-center transition-all duration-500 rounded-2xl p-8 ${
-                timerState === "work" 
-                  ? "bg-work text-work-foreground shadow-[0_0_50px_rgba(34,197,94,0.3)]" 
+                timerState === "work"
+                  ? "bg-work text-work-foreground shadow-[0_0_50px_rgba(34,197,94,0.3)]"
                   : "bg-rest text-rest-foreground shadow-[0_0_50px_rgba(251,191,36,0.3)]"
               }`}
             >
@@ -241,13 +263,14 @@ export const IntervalTimer = () => {
                 {formatTime(timeRemaining)}
               </div>
               <div className="text-xl">
-                Round {currentRound}{!infinite && ` / ${rounds}`}
+                Round {currentRound}
+                {!infinite && ` / ${rounds}`}
               </div>
             </div>
 
             {/* Progress bar */}
             <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
-              <div 
+              <div
                 className={`h-full transition-all duration-1000 ease-linear ${
                   timerState === "work" ? "bg-work-glow" : "bg-rest-glow"
                 }`}
@@ -257,9 +280,9 @@ export const IntervalTimer = () => {
 
             <div className="flex gap-4">
               {isRunning ? (
-                <Button 
-                  onClick={handlePause} 
-                  size="lg" 
+                <Button
+                  onClick={handlePause}
+                  size="lg"
                   variant="secondary"
                   className="flex-1 h-16 text-xl"
                 >
@@ -267,27 +290,27 @@ export const IntervalTimer = () => {
                   Pause
                 </Button>
               ) : (
-                <Button 
-                  onClick={handleStart} 
-                  size="lg" 
+                <Button
+                  onClick={handleStart}
+                  size="lg"
                   className="flex-1 h-16 text-xl"
                 >
                   <Play className="mr-2 h-6 w-6" />
                   Resume
                 </Button>
               )}
-              <Button 
-                onClick={handleSkip} 
-                size="lg" 
+              <Button
+                onClick={handleSkip}
+                size="lg"
                 variant="outline"
                 className="flex-1 h-16 text-xl"
               >
                 <SkipForward className="mr-2 h-6 w-6" />
                 Skip
               </Button>
-              <Button 
-                onClick={handleReset} 
-                size="lg" 
+              <Button
+                onClick={handleReset}
+                size="lg"
                 variant="outline"
                 className="flex-1 h-16 text-xl"
               >
